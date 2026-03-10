@@ -67,7 +67,7 @@ Edit `data/pois.geojson`. Each feature looks like this:
 | `landmark`     | 200m          | 🏛    |
 | `building`     | 180m          | 🏢    |
 | `museum`       | 150m          | 🖼    |
-| `neighbourhood`| 120m          | 🏘    |
+| `neighborhood`| 120m          | 🏘    |
 | `cafe`         | 80m           | ☕    |
 | `restaurant`   | 80m           | 🍽    |
 | `bar`          | 70m           | 🍸    |
@@ -109,14 +109,14 @@ Export → Download as GeoJSON, then manually add `note`, `photos`, and any cust
 
 ## How alerts work
 
-- The map fetches `data/pois.geojson` fresh on each page load — so any edits you push to GitHub will be live next time he refreshes
+- The map fetches `data/pois.geojson` fresh on each page load — so any edits you push to GitHub will be live next time the user refreshes
 - Location is tracked via the browser's Geolocation API (GPS on Android)
-- When he enters the radius of a POI, he gets a push notification, a vibration, and the map flies to that spot
-- For push notifications to work, he must grant notification permission when prompted
-- **Tip:** Have him add the page to his Android home screen via Chrome → "Add to Home Screen" for the best experience
+- When the user enters the radius of a POI, they get a push notification, a vibration, and the map flies to that spot
+- For push notifications to work, the user must grant notification permission when prompted
+- **Tip:** Add the page to your home screen via Chrome → "Add to Home Screen" for the best experience
 
 ---
 
-## Updating the map while he's away
+## Updating the map
 
-Just edit `pois.geojson` and push to GitHub. He refreshes the page and sees your changes instantly. No app update required.
+Just edit `pois.geojson` and push to GitHub. The user refreshes the page and sees your changes instantly. No app update required.
