@@ -1,0 +1,125 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0502, 38.8893] },
+      "properties": {
+        "name": "Lincoln Memorial",
+        "address": "2 Lincoln Memorial Cir NW, Washington, DC 20037",
+        "category": "landmark",
+        "note": "Stand at the top of the steps and look back toward the Reflecting Pool — that view never gets old.",
+        "photos": [],
+        "radius": 250
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0366, 38.8895] },
+      "properties": {
+        "name": "National Mall",
+        "address": "National Mall, Washington, DC 20024",
+        "category": "park",
+        "note": "Walk the full length if the weather's good. Two miles end to end.",
+        "photos": [],
+        "radius": 150
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0232, 38.8913] },
+      "properties": {
+        "name": "United States Capitol",
+        "address": "East Capitol St NE, Washington, DC 20004",
+        "category": "building",
+        "note": "The east front plaza gives you the best unobstructed view of the dome.",
+        "photos": [],
+        "radius": 200
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0261, 38.8921] },
+      "properties": {
+        "name": "Library of Congress",
+        "address": "101 Independence Ave SE, Washington, DC 20540",
+        "category": "building",
+        "note": "The Great Hall is free to enter — the ceiling alone is worth the detour.",
+        "photos": [],
+        "radius": 120
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0199, 38.8976] },
+      "properties": {
+        "name": "Eastern Market",
+        "address": "225 7th St SE, Washington, DC 20003",
+        "category": "neighbourhood",
+        "note": "Best on weekend mornings — the outdoor flea market wraps around the main hall.",
+        "photos": [],
+        "radius": 100
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0426, 38.9072] },
+      "properties": {
+        "name": "The Phillips Collection",
+        "address": "1600 21st St NW, Washington, DC 20009",
+        "category": "museum",
+        "note": "Small, intimate, and genuinely wonderful. Renoir's Luncheon of the Boating Party is here.",
+        "photos": [],
+        "radius": 80
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0631, 38.9079] },
+      "properties": {
+        "name": "Georgetown Waterfront Park",
+        "address": "3303 Water St NW, Washington, DC 20007",
+        "category": "park",
+        "note": "Sit by the river in the evening — good views of the Key Bridge and Roosevelt Island.",
+        "photos": [],
+        "radius": 130
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0593, 38.9060] },
+      "properties": {
+        "name": "Martin's Tavern",
+        "address": "1264 Wisconsin Ave NW, Washington, DC 20007",
+        "category": "restaurant",
+        "note": "DC's oldest saloon, been open since 1933. JFK proposed to Jackie in booth #3.",
+        "photos": [],
+        "radius": 60
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0456, 38.9098] },
+      "properties": {
+        "name": "Dupont Circle Fountain",
+        "address": "Dupont Circle NW, Washington, DC 20036",
+        "category": "artwork",
+        "note": "The marble fountain is easy to overlook — look for the allegorical figures representing the sea, stars, and wind.",
+        "photos": [],
+        "radius": 45
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [-77.0324, 38.9101] },
+      "properties": {
+        "name": "Compass Coffee — Shaw",
+        "address": "1535 7th St NW, Washington, DC 20001",
+        "category": "cafe",
+        "note": "DC-roasted beans, good pour-overs. The 7th St location is the nicest one.",
+        "photos": [],
+        "radius": 60
+      }
+    }
+  ]
+}
