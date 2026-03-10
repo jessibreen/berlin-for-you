@@ -536,14 +536,9 @@ let drawerOpen    = false;
 const map = L.map('map', { zoomControl: false })
   .setView(CONFIG.mapCenter, CONFIG.mapZoom);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_nolabels/{z}/{x}/{y}{r}.png', {
-  attribution: '© OpenStreetMap © Carto',
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© OpenStreetMap contributors',
   maxZoom: 19
-}).addTo(map);
-
-// Label layer on top (so text shows but tiles are dark)
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_matter_only_labels/{z}/{x}/{y}{r}.png', {
-  attribution: '', maxZoom: 19, pane: 'shadowPane'
 }).addTo(map);
 
 L.control.zoom({ position: 'topright' }).addTo(map);
