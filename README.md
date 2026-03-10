@@ -1,4 +1,4 @@
-# Berlin ♥ — Location-Aware Travel Map
+# Berlin for You ♥ — Location-Aware Travel Map
 
 A personal map for a trip to Berlin. Opens in any mobile browser, tracks location via GPS, and sends proximity alerts when the user approaches saved places.
 
