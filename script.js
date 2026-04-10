@@ -33,7 +33,7 @@ const CONFIG = {
     landmark:     { emoji: '🏛', color: '#d4a84b' },
     building:     { emoji: '🏢', color: '#a0a0c0' },
     museum:       { emoji: '🖼', color: '#b06090' },
-    neighbourhood:{ emoji: '🏘', color: '#70b080' },
+    neighborhood:{ emoji: '🏘', color: '#70b080' },
     cafe:         { emoji: '☕', color: '#c8a070' },
     restaurant:   { emoji: '🍽', color: '#d07060' },
     bar:          { emoji: '🍸', color: '#8060b0' },
