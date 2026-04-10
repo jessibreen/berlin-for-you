@@ -310,7 +310,7 @@ function renderDrawer() {
           </div>
           <div class="poi-card-body">
             <strong>${getFeatureName(f)}</strong>
-            <small>${getFeatureNotes(f) || 'Saved place'}</small>
+            <small>${getFeatureNotes(f) || ''}</small>
           </div>
         </div>`;
       }).join('')}
