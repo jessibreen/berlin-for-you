@@ -5,6 +5,8 @@ const CONFIG = {
   // Path to GeoJSON, relative to this HTML file in the same repo
   geojsonPath: './data/pois.geojson',
 
+  enableFilters: false,
+
   // Fallback centre if GeoJSON cannot be loaded or is empty
   mapCenter: [52.52, 13.405],
   mapZoom: 13,
@@ -52,15 +54,24 @@ let userMarker    = null;
 let alerted       = new Set();
 let drawerOpen    = false;
 
+function getFeatureName(feature) {
+  return feature.properties.name || feature.properties.Name || 'Unnamed';
+}
+
+function getFeatureNotes(feature) {
+  return feature.properties.notes || feature.properties.Notes || '';
+}
+
 // ═══════════════════════════════════════════════════════════════════
 // Map
 // ═══════════════════════════════════════════════════════════════════
 const map = L.map('map', { zoomControl: false })
   .setView(CONFIG.mapCenter, CONFIG.mapZoom);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '© OpenStreetMap contributors',
-  maxZoom: 19
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+  subdomains: 'abcd',
+  maxZoom: 20
 }).addTo(map);
 
 L.control.zoom({ position: 'topright' }).addTo(map);
@@ -88,8 +99,17 @@ async function loadPOIs() {
 // Filters
 // ═══════════════════════════════════════════════════════════════════
 function buildFilters() {
+  if (!CONFIG.enableFilters) {
+    const container = document.getElementById('filters');
+    container.innerHTML = '';
+    container.classList.add('hidden');
+    activeFilters = new Set(['all']);
+    return;
+  }
+
   const cats = [...new Set(allFeatures.map(f => f.properties.category || 'other'))];
   const container = document.getElementById('filters');
+  container.classList.remove('hidden');
 
   const allChip = makeChip('all', 'All', true);
   container.appendChild(allChip);
@@ -109,6 +129,8 @@ function makeChip(cat, label, active) {
 }
 
 function toggleFilter(cat, btn) {
+  if (!CONFIG.enableFilters) return;
+
   if (cat === 'all') {
     activeFilters = new Set(['all']);
     document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('on'));
@@ -132,11 +154,14 @@ function toggleFilter(cat, btn) {
 }
 
 function isVisible(feature) {
+  if (!CONFIG.enableFilters) return true;
   if (activeFilters.has('all')) return true;
   return activeFilters.has(feature.properties.category || 'other');
 }
 
 function applyFilters() {
+  if (!CONFIG.enableFilters) return;
+
   allFeatures.forEach(f => {
     const id = featureId(f);
     const layers = leafletLayers[id];
@@ -152,7 +177,7 @@ function applyFilters() {
 // Markers
 // ═══════════════════════════════════════════════════════════════════
 function featureId(f) {
-  return f.properties.name + '_' + f.geometry.coordinates.join('_');
+  return getFeatureName(f) + '_' + f.geometry.coordinates.join('_');
 }
 
 function getRadius(f) {
@@ -161,40 +186,30 @@ function getRadius(f) {
   return CONFIG.categoryDefaults[p.category] || CONFIG.categoryDefaults.other;
 }
 
-function makeIcon(cat, triggered = false) {
-  const style = CONFIG.categoryStyle[cat] || CONFIG.categoryStyle.other;
-  const bg    = triggered ? '#c8705f' : style.color;
+function makeIcon(triggered = false) {
+  const fill = triggered ? '#2f6fd6' : '#4a90e2';
   return L.divIcon({
     className: '',
     html: `<div style="
-      width:34px;height:34px;
-      border-radius:50% 50% 50% 0;
-      transform:rotate(-45deg);
-      background:${bg};
-      display:flex;align-items:center;justify-content:center;
-      box-shadow:0 3px 12px rgba(0,0,0,0.5);
-      border:1.5px solid rgba(255,255,255,0.15);
-    "><span style="transform:rotate(45deg);font-size:0.95rem">${(CONFIG.categoryStyle[cat]||CONFIG.categoryStyle.other).emoji}</span></div>`,
-    iconSize: [34, 34],
-    iconAnchor: [17, 34],
-    popupAnchor: [0, -36]
+      width:18px;height:18px;
+      border-radius:50%;
+      background:${fill};
+      border:3px solid rgba(255,255,255,0.95);
+      box-shadow:0 3px 12px rgba(32,67,124,0.35);
+    "></div>`,
+    iconSize: [18, 18],
+    iconAnchor: [9, 9],
+    popupAnchor: [0, -12]
   });
 }
 
 function makePopup(f) {
-  const p = f.properties;
-  const style = CONFIG.categoryStyle[p.category] || CONFIG.categoryStyle.other;
-  const photos = (p.photos || []).filter(Boolean);
-  const radius = getRadius(f);
+  const name = getFeatureName(f);
+  const notes = getFeatureNotes(f);
 
   return `<div class="popup-inner">
-    <div class="popup-cat">${style.emoji} ${cap(p.category || 'place')}</div>
-    <div class="popup-name">${p.name || 'Unnamed'}</div>
-    ${p.address ? `<div class="popup-addr">📍 ${p.address}</div>` : ''}
-    ${p.note    ? `<div class="popup-note">${p.note}</div>` : ''}
-    ${photos.length ? `<div class="popup-photos">${photos.map(src =>
-      `<img src="${src}" alt="" loading="lazy"/>`).join('')}</div>` : ''}
-    <div class="popup-radius">Alert within ${radius}m</div>
+    <div class="popup-name">${name}</div>
+    ${notes ? `<div class="popup-note">${notes}</div>` : ''}
   </div>`;
 }
 
@@ -209,19 +224,17 @@ function renderMarkers() {
   allFeatures.forEach(f => {
     const [lng, lat] = f.geometry.coordinates;
     const p   = f.properties;
-    const cat = p.category || 'other';
     const id  = featureId(f);
     const r   = getRadius(f);
-    const style = CONFIG.categoryStyle[cat] || CONFIG.categoryStyle.other;
 
-    const marker = L.marker([lat, lng], { icon: makeIcon(cat, alerted.has(id)) })
+    const marker = L.marker([lat, lng], { icon: makeIcon(alerted.has(id)) })
       .bindPopup(makePopup(f), { maxWidth: 280 });
 
     const circle = L.circle([lat, lng], {
       radius: r,
-      color: style.color,
-      fillColor: style.color,
-      fillOpacity: 0.05,
+      color: '#4a90e2',
+      fillColor: '#4a90e2',
+      fillOpacity: 0.04,
       weight: 1,
       dashArray: '3 5'
     });
@@ -290,17 +303,15 @@ function renderDrawer() {
     <div class="poi-list">
       ${visible.map(f => {
         const p = f.properties;
-        const style = CONFIG.categoryStyle[p.category] || CONFIG.categoryStyle.other;
         const id = featureId(f);
         return `<div class="poi-card" onclick="flyTo('${id}')">
-          <div class="poi-card-icon" style="background:${style.color}18;border-color:${style.color}44">
-            ${style.emoji}
+          <div class="poi-card-icon" style="background:#4a90e218;border-color:#4a90e244;color:#4a90e2">
+            ●
           </div>
           <div class="poi-card-body">
-            <strong>${p.name || 'Unnamed'}</strong>
-            <small>${p.address || cap(p.category || 'place')}</small>
+            <strong>${getFeatureName(f)}</strong>
+            <small>${getFeatureNotes(f) || 'Saved place'}</small>
           </div>
-          <span class="poi-badge">${cap(p.category || 'other')}</span>
         </div>`;
       }).join('')}
     </div>`;
@@ -391,13 +402,13 @@ function onPosError(err) {
 }
 
 function triggerAlert(f, dist, id) {
-  const p = f.properties;
-  const style = CONFIG.categoryStyle[p.category] || CONFIG.categoryStyle.other;
+  const name = getFeatureName(f);
+  const notes = getFeatureNotes(f);
 
   // Browser notification
   if ('Notification' in window && Notification.permission === 'granted') {
-    new Notification(`${style.emoji} ${p.name}`, {
-      body: p.note ? p.note.slice(0, 100) : `You are ${dist}m away`,
+    new Notification(name, {
+      body: notes ? notes.slice(0, 100) : `You are ${dist}m away`,
       silent: false
     });
   }
@@ -406,7 +417,7 @@ function triggerAlert(f, dist, id) {
   if ('vibrate' in navigator) navigator.vibrate([150, 80, 150, 80, 300]);
 
   // In-app toast
-  toast(`${style.emoji} <strong>${p.name}</strong> — ${dist}m away!${p.note ? `<br><em style="opacity:0.75;font-size:0.78rem">${p.note.slice(0,80)}…</em>` : ''}`, true);
+  toast(`<strong>${name}</strong> — ${dist}m away!${notes ? `<br><em style="opacity:0.75;font-size:0.78rem">${notes.slice(0,80)}${notes.length > 80 ? '…' : ''}</em>` : ''}`, true);
 
   // Update marker colour & fly
   const [lng, lat] = f.geometry.coordinates;
@@ -414,7 +425,7 @@ function triggerAlert(f, dist, id) {
   setTimeout(() => leafletLayers[id]?.marker.openPopup(), 1100);
 
   // Refresh icon to show triggered state
-  leafletLayers[id]?.marker.setIcon(makeIcon(p.category || 'other', true));
+  leafletLayers[id]?.marker.setIcon(makeIcon(true));
 }
 
 function centerOnUser() {
