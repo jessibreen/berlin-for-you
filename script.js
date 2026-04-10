@@ -186,8 +186,34 @@ function getRadius(f) {
   return CONFIG.categoryDefaults[p.category] || CONFIG.categoryDefaults.other;
 }
 
+function getMarkerPalette() {
+  const theme = document.body?.dataset?.theme || 'cyan';
+  if (theme === 'rust') {
+    return {
+      marker: '#b65a34',
+      markerAlert: '#7b3418',
+      halo: 'rgba(182,90,52,0.28)',
+      ring: 'rgba(182,90,52,0.42)',
+      ringFill: 'rgba(182,90,52,0.08)',
+      cardBg: 'rgba(182,90,52,0.12)',
+      cardBorder: 'rgba(182,90,52,0.28)'
+    };
+  }
+
+  return {
+    marker: '#0f95ad',
+    markerAlert: '#0b5d6d',
+    halo: 'rgba(15,149,173,0.28)',
+    ring: 'rgba(15,149,173,0.44)',
+    ringFill: 'rgba(15,149,173,0.08)',
+    cardBg: 'rgba(15,149,173,0.12)',
+    cardBorder: 'rgba(15,149,173,0.28)'
+  };
+}
+
 function makeIcon(triggered = false) {
-  const fill = triggered ? '#2f6fd6' : '#4a90e2';
+  const palette = getMarkerPalette();
+  const fill = triggered ? palette.markerAlert : palette.marker;
   return L.divIcon({
     className: '',
     html: `<div style="
@@ -195,7 +221,7 @@ function makeIcon(triggered = false) {
       border-radius:50%;
       background:${fill};
       border:3px solid rgba(255,255,255,0.95);
-      box-shadow:0 3px 12px rgba(32,67,124,0.35);
+      box-shadow:0 3px 12px ${palette.halo};
     "></div>`,
     iconSize: [18, 18],
     iconAnchor: [9, 9],
@@ -223,18 +249,18 @@ function renderMarkers() {
 
   allFeatures.forEach(f => {
     const [lng, lat] = f.geometry.coordinates;
-    const p   = f.properties;
     const id  = featureId(f);
     const r   = getRadius(f);
+    const palette = getMarkerPalette();
 
     const marker = L.marker([lat, lng], { icon: makeIcon(alerted.has(id)) })
       .bindPopup(makePopup(f), { maxWidth: 280 });
 
     const circle = L.circle([lat, lng], {
       radius: r,
-      color: '#4a90e2',
-      fillColor: '#4a90e2',
-      fillOpacity: 0.04,
+      color: palette.ring,
+      fillColor: palette.ringFill,
+      fillOpacity: 1,
       weight: 1,
       dashArray: '3 5'
     });
@@ -302,10 +328,10 @@ function renderDrawer() {
     <p class="sub">${visible.length} spot${visible.length !== 1 ? 's' : ''} to discover</p>
     <div class="poi-list">
       ${visible.map(f => {
-        const p = f.properties;
+        const palette = getMarkerPalette();
         const id = featureId(f);
         return `<div class="poi-card" onclick="flyTo('${id}')">
-          <div class="poi-card-icon" style="background:#4a90e218;border-color:#4a90e244;color:#4a90e2">
+          <div class="poi-card-icon" style="background:${palette.cardBg};border-color:${palette.cardBorder};color:${palette.marker}">
             ●
           </div>
           <div class="poi-card-body">
