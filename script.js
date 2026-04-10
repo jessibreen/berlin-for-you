@@ -5,12 +5,8 @@ const CONFIG = {
   // Path to GeoJSON, relative to this HTML file in the same repo
   geojsonPath: './data/pois.geojson',
 
-  // Berlin centre
-  // mapCenter: [38.9072, -77.0369],
-  // mapZoom: 13,
-
-  // DC Center
-  mapCenter: [38.9072, -77.0369],
+  // Fallback centre if GeoJSON cannot be loaded or is empty
+  mapCenter: [52.52, 13.405],
   mapZoom: 13,
 
   // Default alert radius (metres) per category — override per-feature with "radius" property
@@ -81,6 +77,7 @@ async function loadPOIs() {
     allFeatures = gj.features || [];
     buildFilters();
     renderMarkers();
+    fitMapToFeatures();
   } catch (e) {
     toast(`⚠️ Could not load POI data.<br><small>${e.message}</small>`, true);
     console.error(e);
@@ -232,6 +229,31 @@ function renderMarkers() {
     if (isVisible(f)) { marker.addTo(map); circle.addTo(map); }
 
     leafletLayers[id] = { marker, circle };
+  });
+}
+
+function fitMapToFeatures() {
+  const points = allFeatures
+    .filter(f => f?.geometry?.type === 'Point' && Array.isArray(f.geometry.coordinates))
+    .map(f => {
+      const [lng, lat] = f.geometry.coordinates;
+      return [lat, lng];
+    })
+    .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
+
+  if (points.length === 0) {
+    map.setView(CONFIG.mapCenter, CONFIG.mapZoom);
+    return;
+  }
+
+  if (points.length === 1) {
+    map.setView(points[0], 15);
+    return;
+  }
+
+  map.fitBounds(points, {
+    padding: [28, 28],
+    maxZoom: 13
   });
 }
 
